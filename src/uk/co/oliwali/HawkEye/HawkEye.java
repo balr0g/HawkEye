@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,12 +35,7 @@ import uk.co.oliwali.HawkEye.commands.TptoCommand;
 import uk.co.oliwali.HawkEye.commands.UndoCommand;
 import uk.co.oliwali.HawkEye.commands.WorldEditRollbackCommand;
 import uk.co.oliwali.HawkEye.database.DataManager;
-import uk.co.oliwali.HawkEye.listeners.MonitorBlockListener;
-import uk.co.oliwali.HawkEye.listeners.MonitorEntityListener;
-import uk.co.oliwali.HawkEye.listeners.MonitorPlayerListener;
-import uk.co.oliwali.HawkEye.listeners.MonitorWorldListener;
-import uk.co.oliwali.HawkEye.listeners.ToolBlockListener;
-import uk.co.oliwali.HawkEye.listeners.ToolPlayerListener;
+import uk.co.oliwali.HawkEye.listeners.*;
 import uk.co.oliwali.HawkEye.util.Config;
 import uk.co.oliwali.HawkEye.util.Permission;
 import uk.co.oliwali.HawkEye.util.Util;
@@ -53,10 +46,6 @@ public class HawkEye extends JavaPlugin {
 	public String version;
 	public Config config;
 	public static Server server;
-	public MonitorBlockListener monitorBlockListener = new MonitorBlockListener(this);
-	public MonitorEntityListener monitorEntityListener = new MonitorEntityListener(this);
-	public MonitorPlayerListener monitorPlayerListener = new MonitorPlayerListener(this);
-	public MonitorWorldListener monitorWorldListener = new MonitorWorldListener(this);
 	public ToolBlockListener toolBlockListener = new ToolBlockListener();
 	public ToolPlayerListener toolPlayerListener = new ToolPlayerListener();
 	public static List<BaseCommand> commands = new ArrayList<BaseCommand>();
@@ -239,13 +228,33 @@ public class HawkEye extends JavaPlugin {
 */		
 
 		// Register monitor events
-		pm.registerEvents(monitorBlockListener, this);
-		pm.registerEvents(monitorPlayerListener, this);
-		pm.registerEvents(monitorEntityListener, this);
-		pm.registerEvents(monitorWorldListener, this);
-		// Register tool events
-		pm.registerEvents(toolBlockListener, this);
-		pm.registerEvents(toolPlayerListener, this);
+        if (Config.isLogged(DataType.BLOCK_BREAK)) pm.registerEvents(new BlockBreakListener(), this);
+        if (Config.isLogged(DataType.BLOCK_PLACE)) pm.registerEvents(new BlockPlaceListener(), this);
+        if (Config.isLogged(DataType.BLOCK_BURN)) pm.registerEvents(new BlockBurnListener(), this);
+        if (Config.isLogged(DataType.LEAF_DECAY)) pm.registerEvents(new LeavesDecayListener(), this);
+        if (Config.isLogged(DataType.BLOCK_FORM)) pm.registerEvents(new BlockFormListener(), this);
+        if (Config.isLogged(DataType.LAVA_FLOW) || Config.isLogged(DataType.WATER_FLOW)) pm.registerEvents(new BlockFromToListener(), this);
+        if (Config.isLogged(DataType.SIGN_PLACE)) pm.registerEvents(new SignChangeListener(), this);
+        if (Config.isLogged(DataType.BLOCK_FADE)) pm.registerEvents(new BlockFadeListener(), this);
+        if (Config.isLogged(DataType.COMMAND)) pm.registerEvents(new PlayerCommandListener(), this);
+        if (Config.isLogged(DataType.CHAT)) pm.registerEvents(new PlayerChatListener(), this);
+        if (Config.isLogged(DataType.JOIN)) pm.registerEvents(new PlayerJoinListener(), this);
+        if (Config.isLogged(DataType.QUIT)) pm.registerEvents(new PlayerQuitListener(), this);
+        if (Config.isLogged(DataType.TELEPORT)) pm.registerEvents(new PlayerTeleportListener(), this);
+        pm.registerEvents(new PlayerInteractListener(), this);
+        if (Config.isLogged(DataType.ITEM_DROP)) pm.registerEvents(new PlayerDropItemListener(), this);
+        if (Config.isLogged(DataType.ITEM_PICKUP)) pm.registerEvents(new PlayerPickupItemListener(), this);
+        if (Config.isLogged(DataType.PVP_DEATH) || Config.isLogged(DataType.MOB_DEATH) || Config.isLogged(DataType.OTHER_DEATH)) pm.registerEvents(new EntityDeathListener(), this);
+        if (Config.isLogged(DataType.EXPLOSION)) pm.registerEvents(new EntityExplodeListener(), this);
+        if (Config.isLogged(DataType.PAINTING_BREAK)) pm.registerEvents(new PaintingBreakListener(), this);
+        if (Config.isLogged(DataType.PAINTING_BREAK)) pm.registerEvents(new PaintingPlaceListener(), this);
+        if (Config.isLogged(DataType.ENDERMAN_PICKUP)) pm.registerEvents(new EndermanPickupListener(), this);
+        if (Config.isLogged(DataType.ENDERMAN_PLACE)) pm.registerEvents(new EndermanPlaceListener(), this);
+        if (Config.isLogged(DataType.TREE_GROW) || Config.isLogged(DataType.MUSHROOM_GROW)) pm.registerEvents(new StructureGrowListener(), this);
+        
+        //Register tool events
+        pm.registerEvents(new ToolBlockListener(), this);
+        pm.registerEvents(new ToolPlayerListener(), this);
 
 	}
 	
@@ -280,6 +289,7 @@ public class HawkEye extends JavaPlugin {
 	 * @param commandLabel - String
 	 * @param args[] - String[]
 	 */
+        @Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String args[]) {
 		if (cmd.getName().equalsIgnoreCase("hawk")) {
 			if (args.length == 0)

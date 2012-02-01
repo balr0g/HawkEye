@@ -4,6 +4,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import uk.co.oliwali.HawkEye.SessionManager;
@@ -17,7 +18,7 @@ import uk.co.oliwali.HawkEye.util.Config;
  */
 public class ToolBlockListener implements Listener {
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		Block block   = event.getBlock();
