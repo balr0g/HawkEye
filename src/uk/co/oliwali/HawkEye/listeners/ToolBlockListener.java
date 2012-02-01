@@ -2,7 +2,8 @@ package uk.co.oliwali.HawkEye.listeners;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.Listener;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import uk.co.oliwali.HawkEye.SessionManager;
@@ -14,8 +15,9 @@ import uk.co.oliwali.HawkEye.util.Config;
  * Block listener class for HawkEye Tools
  * @author oliverw92
  */
-public class ToolBlockListener extends BlockListener {
+public class ToolBlockListener implements Listener {
 	
+	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		Block block   = event.getBlock();

@@ -13,7 +13,8 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.Listener;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -26,12 +27,13 @@ import uk.co.oliwali.HawkEye.entry.BlockChangeEntry;
 import uk.co.oliwali.HawkEye.entry.BlockEntry;
 import uk.co.oliwali.HawkEye.entry.SignEntry;
 import uk.co.oliwali.HawkEye.entry.SimpleRollbackEntry;
+import uk.co.oliwali.HawkEye.util.Config;
 
 /**
  * Block listener class for HawkEye
  * @author oliverw92
  */
-public class MonitorBlockListener extends BlockListener {
+public class MonitorBlockListener implements Listener {
 	
 	public HawkEye plugin;
 
@@ -39,49 +41,57 @@ public class MonitorBlockListener extends BlockListener {
 		plugin = HawkEye;
 	}
 	
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || !(Config.isLogged(DataType.BLOCK_BREAK))) return;
 		Block block = event.getBlock();
 		if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST)
 			DataManager.addEntry(new SignEntry(event.getPlayer(), DataType.SIGN_BREAK, event.getBlock()));
 		DataManager.addEntry(new BlockEntry(event.getPlayer(), DataType.BLOCK_BREAK, block));
 	}
 	
+	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || !(Config.isLogged(DataType.BLOCK_PLACE))) return;
 		Block block = event.getBlock();
 		if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) return;
 		DataManager.addEntry(new BlockChangeEntry(event.getPlayer(), DataType.BLOCK_PLACE, block.getLocation(), event.getBlockReplacedState(), block.getState()));
 	}
 	
+	@EventHandler
 	public void onSignChange(SignChangeEvent event) {
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || !(Config.isLogged(DataType.SIGN_PLACE))) return;
         DataManager.addEntry(new SignEntry(event.getPlayer(), DataType.SIGN_PLACE, event.getBlock()));
 	}
 	
+	@EventHandler
 	public void onBlockForm(BlockFormEvent event) {
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || !(Config.isLogged(DataType.BLOCK_FORM))) return;
 		DataManager.addEntry(new BlockChangeEntry("Environment", DataType.BLOCK_FORM, event.getBlock().getLocation(), event.getBlock().getState(), event.getNewState()));
 	}
 	
+	@EventHandler
 	public void onBlockFade(BlockFadeEvent event) {
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || !(Config.isLogged(DataType.BLOCK_FADE))) return;
 		DataManager.addEntry(new BlockChangeEntry("Environment", DataType.BLOCK_FADE, event.getBlock().getLocation(), event.getBlock().getState(), event.getNewState()));
 	}
 	
+	@EventHandler
 	public void onBlockBurn(BlockBurnEvent event) {
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || !(Config.isLogged(DataType.BLOCK_BURN))) return;
 		DataManager.addEntry(new BlockEntry("Environment", DataType.BLOCK_BURN, event.getBlock()));
 	}
 	
+	@EventHandler
 	public void onLeavesDecay(LeavesDecayEvent event) {
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || !(Config.isLogged(DataType.LEAF_DECAY))) return;
 		DataManager.addEntry(new SimpleRollbackEntry("Environment", DataType.LEAF_DECAY, event.getBlock().getLocation(), ""));
 	}
 	
+	@EventHandler
 	public void onBlockFromTo(BlockFromToEvent event) {
 		
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || !(Config.isLogged(DataType.WATER_FLOW) && Config.isLogged(DataType.LAVA_FLOW))) return;
 		
 		List<Integer> fluidBlocks = Arrays.asList(0, 27, 28, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 69, 70, 75, 76, 78, 93, 94);
 		

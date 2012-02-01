@@ -209,7 +209,7 @@ public class HawkEye extends JavaPlugin {
 	private void registerListeners(PluginManager pm) {
 		
         // Register monitor events
-        if (Config.isLogged(DataType.BLOCK_BREAK)) pm.registerEvent(Type.BLOCK_BREAK, monitorBlockListener, Event.Priority.Monitor, this);
+/*        if (Config.isLogged(DataType.BLOCK_BREAK)) pm.registerEvent(Type.BLOCK_BREAK, monitorBlockListener, Event.Priority.Monitor, this);
         if (Config.isLogged(DataType.BLOCK_PLACE)) pm.registerEvent(Type.BLOCK_PLACE, monitorBlockListener, Event.Priority.Monitor, this);
         if (Config.isLogged(DataType.BLOCK_BURN)) pm.registerEvent(Type.BLOCK_BURN, monitorBlockListener, Event.Priority.Monitor, this);
         if (Config.isLogged(DataType.LEAF_DECAY)) pm.registerEvent(Type.LEAVES_DECAY, monitorBlockListener, Event.Priority.Monitor, this);
@@ -236,7 +236,17 @@ public class HawkEye extends JavaPlugin {
         //Register tool events
         pm.registerEvent(Type.BLOCK_PLACE, toolBlockListener, Event.Priority.Highest, this);
         pm.registerEvent(Type.PLAYER_INTERACT, toolPlayerListener, Event.Priority.Highest, this);
-		
+*/		
+
+		// Register monitor events
+		pm.registerEvents(monitorBlockListener, this);
+		pm.registerEvents(monitorPlayerListener, this);
+		pm.registerEvents(monitorEntityListener, this);
+		pm.registerEvents(monitorWorldListener, this);
+		// Register tool events
+		pm.registerEvents(toolBlockListener, this);
+		pm.registerEvents(toolPlayerListener, this);
+
 	}
 	
 	/**
